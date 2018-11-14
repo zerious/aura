@@ -106,9 +106,11 @@ Aura.Utils.Util.prototype.isSessionStorageEnabled = function () {
  * @private
  */
 Aura.Utils.Util.prototype.setCookie = function(key, value, duration) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof key === "string", "key must be a string");
     $A.assert(typeof value === "string", "value must be a string");
     $A.assert(duration === undefined || typeof duration === "number", "duration must be a number");
+    //#end
 
     duration = duration || 1000*60*60*24*7; // + 1 week
     var expiration = new Date(new Date().getTime() + duration);
@@ -122,7 +124,9 @@ Aura.Utils.Util.prototype.setCookie = function(key, value, duration) {
  * @export
  */
 Aura.Utils.Util.prototype.getCookie = function(key) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof key === "string", "key must be a string");
+    //#end
 
     var cookies = "; " + document.cookie + ";";
     key = "; " + key + "=";
@@ -140,7 +144,9 @@ Aura.Utils.Util.prototype.getCookie = function(key) {
  * @param {String} key The name of the cookie.
  */
 Aura.Utils.Util.prototype.clearCookie = function(key) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof key === "string", "key must be a string");
+    //#end
     document.cookie = key + "=true; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 };
 
@@ -828,7 +834,9 @@ Aura.Utils.Util.prototype.buildFlavorClass = function(cmp, flavor) {
         cmp = cmp.getDef();
     }
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(!this.isUndefinedOrNull(cmp.getStyleDef()), "Missing StyleDef for component " + cmp.getDescriptor() + " (required for flavors)");
+    //#end
 
     if (this.isEmpty(flavor)) {
         return "";
@@ -1025,7 +1033,9 @@ Aura.Utils.Util.prototype.removeElement = function(element) {
             // reparenting and the gc below.
             //
             if (element.nodeType !== 3 && element.nodeType !== 8) {
+                //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                 $A.assert(this.isUndefined(element["aura_deleted"]), "Element was reused after delete");
+                //#end
                 element["aura_deleted"] = true;
             }
 
@@ -1156,7 +1166,9 @@ Aura.Utils.Util.prototype.trim = function(value){
  * @export
  */
 Aura.Utils.Util.prototype.format=function(formatString,arg1,arg2,argN){//eslint-disable-line no-unused-vars
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(formatString),"$A.util.format(): 'formatString' must be a String.");
+    //#end
     var formatArguments = Array.prototype.slice.call(arguments,1);
     return formatString.replace(/\{(\d+)\}/gm, function(match, index) {
         var substitution = formatArguments[index];
@@ -1230,8 +1242,10 @@ Aura.Utils.Util.prototype.truncate = function(st, len, ellipsis, truncateByWord)
  * @export
  */
 Aura.Utils.Util.prototype.createTimeoutCallback = function(callback, toleranceMillis) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(!$A.util.isUndefinedOrNull(callback) && $A.util.isFunction(callback), "Invalid callback");
     $A.assert(toleranceMillis > 0, "Must use a positive tolerance period.");
+    //#end
 
     // The last time the returned function was invoked.
     var rtime = null;
@@ -1243,7 +1257,9 @@ Aura.Utils.Util.prototype.createTimeoutCallback = function(callback, toleranceMi
      */
     function timeoutCallback() {
         var currentDuration = new Date() - rtime;
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(currentDuration >= 0);
+        //#end
         if (currentDuration < toleranceMillis) {
             // An invocation occurred after this timeout was scheduled. Recheck
             // when the period starting from the last invocation finishes.
@@ -1366,7 +1382,9 @@ Aura.Utils.Util.prototype.on = (function() {
  * @export
  */
 Aura.Utils.Util.prototype.removeOn = function(element, eventName, listener, useCapture) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(element, "try to remove an event listener from a no-longer-exist DOM element");
+    //#end
 
     if (this.isUndefined(listener)) {
         return;
@@ -1381,7 +1399,9 @@ Aura.Utils.Util.prototype.removeOn = function(element, eventName, listener, useC
     } else if (window["detachEvent"]) {
         element.detachEvent("on" + eventName, listener);
     } else {
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(false, "user agent must support either removeEventListener or detachEvent to remove an event handler.");
+        //#end
     }
 };
 
@@ -2277,10 +2297,12 @@ Aura.Utils.Util.prototype.emptyComponentTrash = function() {
  * @export
  */
 Aura.Utils.Util.prototype.contains = function(container, element) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isHTMLElement(container) || $A.util.isSVGElement(container),
             "$A.util.conatins(): 'container' must be HTMLElement or SVGElement: " + container);
     $A.assert($A.util.isHTMLElement(element) || $A.util.isSVGElement(element),
             "$A.util.conatins(): 'element' must be HTMLElement or SVGElement: " + element);
+    //#end
 
     while(element) {
         if (element === container) {
@@ -2577,7 +2599,7 @@ Aura.Utils.Util.prototype.getHashCode = function(value) {
     return hash;
 };
 
-//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
+//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG", "PTEST"]}
     /**
      * Gets the aura debug tool component whether in an iframe or not.
      * @returns {Object} The debug tool component.

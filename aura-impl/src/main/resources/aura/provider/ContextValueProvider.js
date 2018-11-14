@@ -79,20 +79,20 @@ ContextValueProvider.prototype.merge = function(values) {
             // if (this.values.hasOwnProperty(key)) {
             //     old = this.values[key];
             // }
-            
+
             if (!value || !(value.hasOwnProperty("value") || value.hasOwnProperty("defaultValue"))) {
                 throw new Error("Invalid merge value at key '"+key+"' with value '"+value+"'");
             }
 
             // So if they set a value on the client for a $Global property
-            // Setting it on the server will never take effect. 
+            // Setting it on the server will never take effect.
             // Even if we do a setGlobalValue()
-            // It feels like we'd want to set the value to the clientValue, but 
+            // It feels like we'd want to set the value to the clientValue, but
             // I feel we need a test to validate that first.
-            // 
-            // Kris: Testing now 
+            //
+            // Kris: Testing now
             // if (value["writable"] && old && old.hasOwnProperty("value")) {
-            //     value["value"] = old["value"]; 
+            //     value["value"] = old["value"];
             // }
             if(value.hasOwnProperty("value")) {
                 if(!this.values.hasOwnProperty(key)) {
@@ -135,7 +135,9 @@ ContextValueProvider.prototype.get = function(key) {
  * @return {Object} the value that was set.
  */
 ContextValueProvider.prototype.set = function(key, value) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(key.indexOf('.') === -1, "Unable to set value for key '" + key + "', did you add an extra '.'?");
+    //#end
     if ($A.util.isExpression(value)) {
         throw new Error("Unable to set global value '"+key+"' to the expression '"+value+"'. Global items must be constants");
     }

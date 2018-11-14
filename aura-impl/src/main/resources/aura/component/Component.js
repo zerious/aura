@@ -795,7 +795,9 @@ Component.prototype.addDocumentLevelHandler = function(eventName, callback, auto
     if (!this.docLevelHandlers) {
         this.docLevelHandlers = {};
     }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.docLevelHandlers[eventName] === undefined, "Same doc level event set twice");
+    //#end
     this.docLevelHandlers[eventName] = dlh;
     dlh.setEnabled(autoEnable);
     return dlh;
@@ -1291,11 +1293,15 @@ Component.prototype.getReference = function(key) {
 Component.prototype.clearReference = function(key) {
     if(!this.destroyed) {
         key = $A.expressionService.normalize(key);
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(key.indexOf('.') > -1, "Unable to clear reference for key '" + key + "'. No value provider was specified. Did you mean 'v." + key + "'?");
+        //#end
         var path = key.split('.');
         var valueProvider = this.getValueProvider(path.shift());
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(valueProvider, "Unknown value provider for key '" + key + "'.");
         $A.assert(valueProvider.clearReference, "Value provider does not implement clearReference() method.");
+        //#end
         var subPath = path.join('.');
         var value = valueProvider.clearReference(subPath);
         if ($A.util.isExpression(value)) {
@@ -1330,7 +1336,9 @@ Component.prototype.get = function(key) {
     var valueProvider = this.getValueProvider(root);
     if (path.length) {
         if(!valueProvider){
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             $A.assert(false, "Unable to get value for key '" + key + "'. No value provider was found for '" + root + "'.");
+            //#end
         }
 
         var value;
@@ -1377,18 +1385,19 @@ Component.prototype.getShadowAttribute = function(key) {
 Component.prototype.set = function(key, value, ignoreChanges) {
     if(this.destroyed!==1) {
         key = $A.expressionService.normalize(key);
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(key.indexOf('.') > -1, "Unable to set value for key '" + key + "'. No value provider was specified. Did you mean 'v." + key + "'?");
+        //#end
 
         var path = key.split('.');
         var root = path.shift();
         var valueProvider = this.getValueProvider(root);
 
-        if (!valueProvider) {
-            $A.assert(false, "Unable to set value for key '" + key + "'. No value provider was found for '" + root + "'.");
-        }
-        if (!valueProvider.set) {
-            $A.assert(false, "Unable to set value for key '" + key + "'. Value provider does not implement 'set(key, value)'.");
-        }
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+        $A.assert(valueProvider, "Unable to set value for key '" + key + "'. No value provider was found for '" + root + "'.");
+        $A.assert(valueProvider.set, "Unable to set value for key '" + key + "'. Value provider does not implement 'set(key, value)'.");
+        //#end
+
         var subPath = path.join('.');
 
         var oldValue = valueProvider.get(subPath, this);
@@ -1681,9 +1690,11 @@ Component.prototype.addValueProvider = function(key, valueProvider) {
         return;
     }
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(key), "Component.addValueProvider(): 'key' must be a valid String.");
     $A.assert(",v,m,c,e,this,globalid,def,super,null,version,".indexOf("," + key.toLowerCase() + ",") === -1, "Component.addValueProvider(): '" + key + "' is a reserved valueProvider.");
     $A.assert(!$A.util.isUndefinedOrNull(valueProvider), "Component.addValueProvider(): 'valueProvider' is required.");
+    //#end
 
     if (this.valueProviders[key] !== undefined) {
         $A.warning("The value provider already existes: " + key);
@@ -1703,8 +1714,10 @@ Component.prototype.removeValueProvider = function(key) {
         return;
     }
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(key), "Component.removeValueProvider(): 'key' must be a valid String.");
     $A.assert(",v,m,c,e,this,globalid,def,super,null,version,".indexOf("," + key.toLowerCase() + ",") === -1, "Component.removeValueProvider(): '" + key + "' is a reserved valueProvider and can not be removed.");
+    //#end
 
     if (this.valueProviders.hasOwnProperty(key)) {
         this.valueProviders[key] = undefined;
@@ -2163,7 +2176,9 @@ Component.prototype.createStyleValueProvider = function() {
  */
 Component.prototype.setupComponentDef = function(config) {
     var componentDef = $A.componentService.getDef(config["componentDef"]);
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(componentDef, "componentDef is required");
+    //#end
     this.componentDef = componentDef;
 
     if (config["original"]) { // We have to replace the abstractdef for the concrete one
@@ -2606,7 +2621,9 @@ Component.prototype.getActionCaller = function(valueProvider, actionExpression) 
         //     throw new Error("WHY ARE YOU RUNNING A NOT AN ACTION?");
         //     clientAction.runDeprecated(event);
         } else {
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             $A.assert(false, "no client action by name " + actionExpression);
+            //#end
         }
     };
 
@@ -2674,10 +2691,12 @@ Component.prototype.setupComponentEvents = function(cmp, config) {
                 var key = keys[j];
                 var eventValue = values[key];
                 if (eventValue) {
+                    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                     $A.assert(!this.concreteComponentId,
                             "Event handler for " + key
                             + " defined on super component "
                             + this.globalId);
+                    //#end
                     cmp.addHandler(key, valueProvider || this, eventValue["value"]||eventValue, false, "bubble");
                 }
             }
@@ -2856,9 +2875,11 @@ Component.prototype.injectComponent = function(config, localCreation) {
                 $A.clientService.releaseCurrentAccess();
             }
         } else {
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             $A.assert(this.partialConfig,
-                    "Abstract component without provider def cannot be instantiated : "
-                    + this.componentDef);
+                "Abstract component without provider def cannot be instantiated : "
+                + this.componentDef);
+            //#end
             this.setProvided($A.componentService.getDef(this.partialConfig["componentDef"]), null);
         }
 
@@ -2875,7 +2896,9 @@ Component.prototype.injectComponent = function(config, localCreation) {
  */
 Component.prototype.provide = function(localCreation) {
     var provideMethod = this["provider"] && this["provider"]["provide"];
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(provideMethod, "Provide method not found");
+    //#end
 
     var providedConfig = provideMethod(this, localCreation);
 
@@ -2901,12 +2924,14 @@ Component.prototype.provide = function(localCreation) {
 
 Component.prototype.setProvided = function(realComponentDef, attributes) {
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(realComponentDef instanceof ComponentDef,
             "No definition for provided component: " +this.componentDef);
     $A.assert(!realComponentDef.isAbstract(),
             "Provided component cannot be abstract: " + realComponentDef);
     $A.assert(!realComponentDef.hasRemoteDependencies() || (realComponentDef.hasRemoteDependencies() && this.partialConfig),
             "Client provided component cannot have server dependencies: " + realComponentDef);
+    //#end
 
     // Definition did not change (if.cmp for example) so do not do any extra work.
     if(this.componentDef === realComponentDef && !attributes) {

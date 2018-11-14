@@ -1056,7 +1056,9 @@ AuraRenderingService.prototype.rerenderDirty = function(stackName) {
         //KRIS: HALO:
         // Somehow we did over 1000 rerenderings. Not just 1000 components, but one
         // component caused a rerender that caused a rerender, and on and on for 1000 times.
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(maxiterations, "Max Callstack Exceeded: Rerendering loop resulted in to many rerenderings.");
+        //#end
 
         // #if {"modes" : ["PTEST","STATS"]}
         if (allRerendered.length) {

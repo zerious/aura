@@ -59,8 +59,10 @@ ComponentClassRegistry.prototype.hasComponentClass = function(descriptor) {
  * @export
  */
 ComponentClassRegistry.prototype.addComponentClass = function(descriptor, exporter){
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(descriptor), "Component class descriptor is invalid: " + descriptor);
     $A.assert($A.util.isFunction(exporter), "Component class exporter is not a function: " + descriptor);
+    //#end
     if (!this.hasComponentClass(descriptor)) {
         this.classExporter[descriptor] = exporter;
     }

@@ -36,7 +36,9 @@ function AuraStorageService() {
  * @export
  */
 AuraStorageService.prototype.getStorage = function(name) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(name), "AuraStorageService.getStorage(): 'name' must be a String.");
+    //#end
     return this.storages[name];
 };
 
@@ -83,11 +85,13 @@ AuraStorageService.prototype.getStorages = function() {
  * @export
  */
 AuraStorageService.prototype.initStorage = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isObject(config), "config must be an object");
     $A.assert($A.util.isString(config["name"]) && config["name"], "name must be a non-empty string");
     $A.assert(!this.storages[config["name"]], "Storage named '" + config["name"] + "' already exists");
+    //#end
 
-    
+
     // There's a boundary condition where expiration could be between Number.MAX_VALUE/1000 and Number.MAX_VALUE.
     // AuraStorage.js config takes the expiration and multiplies by 1000.
     // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_VALUE
@@ -138,9 +142,11 @@ AuraStorageService.prototype.initStorage = function(config) {
  * @export
  */
 AuraStorageService.prototype.registerAdapter = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(config["name"]) && config["name"], "config.name must be a non-empty string");
     $A.assert($A.util.isFunction(config["adapterClass"]), "config.adapterClass must be a function");
     $A.assert(!this.adapters[config["name"]], "Adapter '" + config["name"] + "' already registered");
+    //#end
 
     var validatedConfig = {
         "name": config["name"],
@@ -161,7 +167,9 @@ AuraStorageService.prototype.registerAdapter = function(config) {
  * @export
  */
 AuraStorageService.prototype.isRegisteredAdapter = function(name) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(name), "AuraStorageService.isRegisteredAdapter(): 'name' must be a String.");
+    //#end
     return this.adapters[name] !== undefined;
 };
 
@@ -201,7 +209,9 @@ AuraStorageService.prototype.selectAdapter = function(persistent, secure) {
 
     // failure case that should never be possible: fallback to memory
     if (candidates.length === 0) {
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(this.adapters[Aura.Storage.MemoryAdapter.NAME], "Memory Aura Storage Adapter was not registered");
+        //#end
         return Aura.Storage.MemoryAdapter.NAME;
     }
 
@@ -229,7 +239,9 @@ AuraStorageService.prototype.selectAdapter = function(persistent, secure) {
  * @export
  */
 AuraStorageService.prototype.deleteStorage = function(name) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(name), "AuraStorageService.deleteStorage(): 'name' must be a String.");
+    //#end
 
     var storage = this.getStorage(name);
     if (!storage) {

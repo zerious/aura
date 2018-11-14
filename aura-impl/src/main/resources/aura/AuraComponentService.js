@@ -160,7 +160,9 @@ AuraComponentService.prototype.getDescriptorFromConfig = function(descriptorConf
         }
     }
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(descriptor, "Descriptor for Config required for registration");
+    //#end
     if (this.descriptorCasingMap[descriptor]) {
         $A.deprecated("Descriptor case sensitivity mismatch, descriptors are case sensitive.",
             "Please find the reference to: " + descriptor + " and change it to: " + this.descriptorCasingMap[descriptor],
@@ -219,7 +221,9 @@ AuraComponentService.prototype.countComponents = function() {
  * @export
  */
 AuraComponentService.prototype.getComponentLocator = function(cmp, targetCmp, includeMetadata) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(cmp, 'No component provided');
+    //#end
     return cmp.getLocator(targetCmp, includeMetadata);
 };
 
@@ -363,9 +367,11 @@ AuraComponentService.prototype.newComponentArray = function(config, attributeVal
  * @export
  */
 AuraComponentService.prototype.createComponent = function(type, attributes, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(type), "ComponentService.createComponent(): 'type' must be a valid String.");
     $A.assert(!attributes || $A.util.isObject(attributes), "ComponentService.createComponent(): 'attributes' must be a valid Object.");
     $A.assert($A.util.isFunction(callback), "ComponentService.createComponent(): 'callback' must be a Function pointer.");
+    //#end
 
     if (type.indexOf(':') < 0){
         attributes = {
@@ -399,7 +405,9 @@ AuraComponentService.prototype.createComponent = function(type, attributes, call
  */
 AuraComponentService.prototype.createInternalConfig = function (config) {
     var descriptor = config["descriptor"];
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(descriptor.indexOf("markup://") === 0, "Descriptor needs to be of the format markup://ns:name");
+    //#end
 
     return {
         "componentDef"     : this.createDescriptorConfig(config["descriptor"]),
@@ -446,7 +454,9 @@ AuraComponentService.prototype.createInternalConfig = function (config) {
  * @export
  */
 AuraComponentService.prototype.createComponentFromConfig = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(config, "Config is required to create a component");
+    //#end
 
     // The assumption is, that if we have a first level "descriptor" property
     // is a user created config, otherwise we assume it is a private one
@@ -488,8 +498,10 @@ AuraComponentService.prototype.createComponentFromConfig = function(config) {
  * @export
  */
 AuraComponentService.prototype.createComponents = function(components, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isArray(components), "ComponentService.createComponents(): 'components' must be a valid Array.");
     $A.assert($A.util.isFunction(callback),"ComponentService.createComponents(): 'callback' must be a Function pointer.");
+    //#end
 
     var created=[];
     var overallStatus="SUCCESS";
@@ -545,7 +557,9 @@ AuraComponentService.prototype.newComponentDeprecated = function(config, attribu
     $A.deprecated("$A.newCmpDeprecated and $A.componentService.newComponentDeprecated are not supported.",
         "Use '$A.createComponent();'.", "AuraComponentService.newComponentDeprecated");
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(config, "config is required in ComponentService.newComponentDeprecated(config)");
+    //#end
 
     if ($A.util.isArray(config)){
         return this.newComponentArray(config, attributeValueProvider, localCreation, doForce);
@@ -781,7 +795,9 @@ AuraComponentService.prototype.evaluateModuleDef = function (descriptor) {
     var exportns;
     var url;
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(entry, "Failed to find definition for dependency: " + descriptor);
+    //#end
 
     // If we have resolved already the exports (libraries case), return them
     if (entry.ns) {
@@ -881,7 +897,7 @@ AuraComponentService.prototype.evaluateModuleDef = function (descriptor) {
             // Inspect dependencies and decide which library modules to wrap
             for (var i = 0; i < deps.length; i++) {
                 var depName = entry.dependencies[i];
-                
+
                 // If the reference is a module and it is not the lwc/engine module, then we need to wrap it
                 if (sourceReferencesInfo && sourceReferencesInfo[depName] === "module" && depName !== "engine" && depName !== "lwc") {
                     var depDefDescriptor = new DefDescriptor(this.moduleNameToDescriptorLookup[depName]);
@@ -1004,8 +1020,10 @@ AuraComponentService.prototype.newComponentAsync = function(callbackScope, callb
     $A.deprecated("$A.newCmpAsync and $A.componentService.newComponentAsync are not supported.",
         "Use '$A.createComponent()'");
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(config, "ComponentService.newComponentAsync(): 'config' must be a valid Object.");
     $A.assert($A.util.isFunction(callback),"ComponentService.newComponentAsync(): 'callback' must be a Function pointer.");
+    //#end
 
     var isSingle=!$A.util.isArray(config);
     if(isSingle){
@@ -1487,7 +1505,9 @@ AuraComponentService.prototype.hasModuleDefinition = function(moduleName) {
  * @deprecated use getDefinition(descriptor, callback) instead, it will go to the server if the definition is not present on the client.
  */
 AuraComponentService.prototype.getDef = function(descriptor) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(descriptor, "No ComponentDef descriptor specified");
+    //#end
     var def = this.getComponentDef(this.createDescriptorConfig(descriptor));
 
     if (def && !$A.clientService.allowAccess(def)) {
@@ -1974,7 +1994,9 @@ AuraComponentService.prototype.saveDefsToStorage = function (config, context) {
 AuraComponentService.prototype.createComponentPrivAsync = function (config, callback, infiniteLoopProtection) {
     var descriptor = this.getDescriptorFromConfig(config["componentDef"]);
     var def = this.getComponentDef({ "descriptor" : descriptor });
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(callback && typeof callback === 'function' , 'Callback');
+    //#end
 
     // If we have the definition already, go ahead
     // If we don't have the def and uri-addressable defs is enabled and should use the action.
@@ -2336,7 +2358,9 @@ AuraComponentService.prototype.evictDefsFromStorage = function(sortedKeys, graph
              */
             function removeActions(actions) {
                 if (!actionStorage.isStorageEnabled() || !actions.length) {
+                    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                     $A.assert(actions.length === 0 || actionStorage.isStorageEnabled(), "Actions store doesn't exist but requested removal of " + actions.length + " actions");
+                    //#end
                     return Promise["resolve"]();
                 }
 

@@ -73,7 +73,9 @@ function AuraStyleService() {
  * @export
  */
 AuraStyleService.prototype.applyTokens = function(descriptor, config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(!$A.util.isUndefinedOrNull(descriptor), "applyTokens() cannot be given a null or undefined descriptor argument");
+    //#end
     this.applyAllTokens([descriptor], config);
 };
 
@@ -126,7 +128,9 @@ AuraStyleService.prototype.applyTokens = function(descriptor, config) {
  * @export
  */
 AuraStyleService.prototype.applyAllTokens = function(descriptors, config) {
-	$A.assert($A.util.isArray(descriptors), "applyAllTokens() expects the 'descriptors' arg to be an array of strings");
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+    $A.assert($A.util.isArray(descriptors), "applyAllTokens() expects the 'descriptors' arg to be an array of strings");
+    //#end
 	var that = this;
     config = config || {};
 

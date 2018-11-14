@@ -22,7 +22,9 @@ function TypeDefRegistry(){
 }
 
 TypeDefRegistry.prototype.getDef = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(config, "TypeDef Config required for registration");
+    //#end
     // We don't re-register (or modify in any way) once we've registered
     var descriptor = config["descriptor"];
     var ret = this.typeDefs[descriptor];

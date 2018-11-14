@@ -82,7 +82,9 @@ Aura.Utils.Mutex.prototype.lock = function (/* [key], callback, [timeout] */) {
     var callback = xargs.shift();
     var timeout  = xargs.shift() || Aura.Utils.Mutex.MAX_LOCK_TIME;
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof callback === 'function', 'Mutex needs a function to execute');
+    //#end
 
     if (this.lockAvailable && !this.queue.length) {
         this.lockAvailable = false;

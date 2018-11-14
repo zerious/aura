@@ -70,7 +70,9 @@ AttributeDef.prototype.getTypeDefDescriptor = function(){
  * @export
  */
 AttributeDef.prototype.getNativeType = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.typeDefDescriptor, "getNativeType() failed as there was no typeDefDescriptor for attribute " + this.getDescriptor() + ". Eacha attribute must have a definition before being set.");
+    //#end
     if(this.typeDefDescriptor.lastIndexOf("[]") === this.typeDefDescriptor.length - 2) {
         return "array";
     }

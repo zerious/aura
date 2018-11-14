@@ -645,7 +645,9 @@ InteropComponentDef.prototype.getLocatorDefs = function() {
 InteropComponentDef.prototype.initSuperDef = function(config) {
     if (config) {
         var sDef = $A.componentService.createComponentDef(config);
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(sDef, "Super def undefined for " + this.descriptor + " value = " + config["descriptor"]);
+        //#end
         return sDef;
     }
 

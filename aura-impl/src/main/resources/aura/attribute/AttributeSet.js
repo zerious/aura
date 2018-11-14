@@ -34,9 +34,9 @@ function AttributeSet(attributeDefSet) {
 
 	//this.initialize(attributes);
 
-	// #if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
+	//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
 	this["values"] = this.values;
-	// #end
+	//#end
 }
 
 /**
@@ -334,11 +334,11 @@ AttributeSet.prototype.set = function(key, value, component) {
         // which we need to support legacy old behaviour due to inheritance.
         target[key] = value;
     }
-// #if {"excludeModes" : ["PRODUCTION", "STATS"]}
+//#if {"excludeModes" : ["PRODUCTION", "STATS"]}
     else {
         $A.warning("AttributeSet.set(): unable to override the value for '" + key + "=" + target[key] + "'. FunctionCallValues declared in markup are constant.");
     }
-// #end
+//#end
 };
 
 /**
@@ -443,7 +443,9 @@ AttributeSet.prototype.isTypeOfArray = function(attributeName) {
  */
 AttributeSet.prototype.merge = function(attributes, attributeDefSet, component) {
 	if(attributeDefSet){
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(attributeDefSet instanceof AttributeDefSet, "AttributeSet.merge: A valid AttributeDefSet is required to merge attributes.");
+        //#end
         this.attributeDefSet = attributeDefSet;
     }
 

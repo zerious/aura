@@ -98,9 +98,11 @@ Aura.Event.Event.prototype.stopPropagation = function() {
 
     // stopPropagation was introduced before this assertion and may be used
     // in non-bubbling component events
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(eventExecutionType !== "COMPONENT" ||
         eventExecutionType !== "APPLICATION" ||
         this.getPhase() !== "default", "stopPropagation() is not supported in the 'default' phase");
+    //#end
     this.eventStopPropagation = true;
 };
 
@@ -112,7 +114,9 @@ Aura.Event.Event.prototype.stopPropagation = function() {
  * @export
  */
 Aura.Event.Event.prototype.preventDefault = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.getPhase() !== "default", "preventDefault() is not supported in the 'default' phase");
+    //#end
     this.defaultPrevented = true;
 };
 
@@ -126,7 +130,9 @@ Aura.Event.Event.prototype.preventDefault = function() {
  * @export
  */
 Aura.Event.Event.prototype.pause = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.getPhase() !== "default", "pause() is not supported in the 'default' phase");
+    //#end
     if(!this.paused) {
         this.paused = true;
     }
@@ -145,7 +151,9 @@ Aura.Event.Event.prototype.pause = function() {
  * @export
  */
 Aura.Event.Event.prototype.resume = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.getPhase() !== "default", "resume() is not supported in the 'default' phase");
+    //#end
     if(this.paused) {
         this.paused = false;
         // JBA: should this queue a microtask/task or start from this activation frame?
@@ -203,9 +211,9 @@ Aura.Event.Event.prototype.getEventType = function(){
  * @export
  */
 Aura.Event.Event.prototype.setParams = function(config) {
-    if (this.fired) {
-        $A.assert(false, "Event.setParams(): cannot modify all params in an event that has already been fired.");
-    }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+    $A.assert(!this.fired, "Event.setParams(): cannot modify all params in an event that has already been fired.");
+    //#end
 
     if (config) {
         var attributeDefs = this.eventDef.getAttributeDefs();
@@ -230,9 +238,9 @@ Aura.Event.Event.prototype.setParams = function(config) {
  * @export
  */
 Aura.Event.Event.prototype.setParam = function(key, value) {
-    if (this.fired && this.componentEvent) {
-        $A.assert(false, "Event.setParam(): cannot modify a component event that has already been fired.");
-    }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+    $A.assert(!(this.componentEvent && this.fired), "Event.setParam(): cannot modify a component event that has already been fired.");
+    //#end
     if (this.eventDef.getAttributeDefs().hasAttribute(key)) {
         this.params[key] = value;
     } else {
@@ -393,9 +401,9 @@ Aura.Event.Event.prototype.getHandlerIterator = function() {
 Aura.Event.Event.prototype.fire = function(params) {
     var self = this;
 
-    if (this.fired) {
-        $A.assert(false, "Event.fire(): Unable to fire event. Event has already been fired.");
-    }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+    $A.assert(!this.fired, "Event.fire(): Unable to fire event. Event has already been fired.");
+    //#end
 
     if (params) {
         this.setParams(params);

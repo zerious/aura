@@ -391,7 +391,9 @@ GlobalValueProviders.prototype.get = function(expression, callback) {
     expression=$A.expressionService.normalize(expression).split('.');
     var type=expression.shift();
     var valueProvider=this.valueProviders[type];
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(valueProvider,"Unknown value provider: '"+type+"'.");
+    //#end
     return (valueProvider.get ? valueProvider.get(expression, callback) : $A.expressionService.resolve(expression, valueProvider));
 };
 

@@ -54,7 +54,9 @@ Model.prototype.set=function(key,value){
     if (key.indexOf('.') >= 0) {
         var path = key.split('.');
         target = aura.expressionService.resolve(path.slice(0, path.length - 1), target);
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(target,"Model.set: unable to resolve '"+key+"'.");
+        //#end
         step=path[path.length-1];
     }
     oldValue = target[step];

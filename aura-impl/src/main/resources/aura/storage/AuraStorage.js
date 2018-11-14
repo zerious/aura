@@ -43,7 +43,7 @@ var AuraStorage = function AuraStorage(config) {
     // extract values this class uses
     this.name = config["name"];
     this.cacheStats = $A.metricsService.registerCacheStats('AuraStorage_' + this.name);
-    
+
     this.maxSize = config["maxSize"];
     this.expiration = config["expiration"] * 1000;
     this.autoRefreshInterval = config["autoRefreshInterval"] * 1000;
@@ -308,8 +308,10 @@ AuraStorage.prototype.clearInternal = function(resolve, reject) {
  * @export
  */
 AuraStorage.prototype.get = function(key, includeExpired) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(key), "AuraStorage.get(): 'key' must be a String.");
     $A.assert(!includeExpired || $A.util.isBoolean(includeExpired), "AuraStorage.get(): 'includeExpired' must be a Boolean.");
+    //#end
 
     return this.getAll([key], includeExpired)
         ["then"](
@@ -341,8 +343,10 @@ AuraStorage.prototype.inFlightOperations = function() {
  * @export
  */
 AuraStorage.prototype.getAll = function(keys, includeExpired) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(!keys || Array.isArray(keys), "AuraStorage.getAll(): 'keys' must be an Array.");
     $A.assert(!includeExpired || $A.util.isBoolean(includeExpired), "AuraStorage.getAll(): 'includeExpired' must be a Boolean.");
+    //#end
 
     return this.enqueue(this.getAllInternal.bind(this, keys, includeExpired));
 };
@@ -404,7 +408,7 @@ AuraStorage.prototype.getAllInternal = function(keys, includeExpired, resolve, r
                     // wrong isolationKey/version or item is expired so ignore the entry
                     // TODO - capture entries to be removed async
                 }
-                
+
                 // explicit logging check because this is costly
                 if (isKeysPresent) {
                     logHitsAndMisses(results, hitsCount);
@@ -473,7 +477,9 @@ AuraStorage.prototype.buildPayload = function(key, value, now) {
  * @export
  */
 AuraStorage.prototype.set = function(key, value) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(key), "AuraStorage.set(): 'key' must be a String.");
+    //#end
 
     var values = {};
     values[key] = value;
@@ -487,7 +493,9 @@ AuraStorage.prototype.set = function(key, value) {
  * @export
  */
 AuraStorage.prototype.setAll = function(values) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isObject(values), "AuraStorage.setAll(): 'values' must be an Object.");
+    //#end
 
     return this.enqueue(this.setAllInternal.bind(this, values));
 };
@@ -546,8 +554,10 @@ AuraStorage.prototype.setAllInternal = function(values, resolve, reject) {
  * @export
  */
 AuraStorage.prototype.remove = function(key, doNotFireModified) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(key), "AuraStorage.remove(): 'key' must be a String.");
     $A.assert(!doNotFireModified || $A.util.isBoolean(doNotFireModified), "AuraStorage.remove(): 'doNotFireModified' must be a Boolean.");
+    //#end
 
     return this.removeAll([key], doNotFireModified);
 };
@@ -560,8 +570,10 @@ AuraStorage.prototype.remove = function(key, doNotFireModified) {
  * @export
  */
 AuraStorage.prototype.removeAll = function(keys, doNotFireModified) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isArray(keys), "AuraStorage.removeAll(): 'keys' must be an Array.");
     $A.assert(doNotFireModified === undefined || $A.util.isBoolean(doNotFireModified), "AuraStorage.removeAll(): 'doNotFireModified' must be undefined or a Boolean.");
+    //#end
 
     return this.enqueue(this.removeAllInternal.bind(this, keys, doNotFireModified));
 };
@@ -605,7 +617,9 @@ AuraStorage.prototype.removeAllInternal = function(keys, doNotFireModified, reso
  * @private
  */
 AuraStorage.prototype.sweep = function(ignoreInterval) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(ignoreInterval === undefined || $A.util.isBoolean(ignoreInterval), "AuraStorage.sweep(): 'ignoreInterval' must be undefined or a Boolean.");
+    //#end
 
     // sweeping guards:
     // 1. sweeping is in progress

@@ -16,7 +16,7 @@
 
 var assert = noop; // eslint-disable-line no-undef
 
-//#if {"excludeModes" : ["PRODUCTION"]}
+//#if {"excludeModes" : ["PRODUCTION","PTEST"]}
 assert = function (condition, message) {
    $A.assert(condition, message);
 };

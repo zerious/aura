@@ -912,8 +912,10 @@ AuraLocalizationService.prototype.getToday = function(timezone, callback) {
  * @platform
  */
 AuraLocalizationService.prototype.getDateStringBasedOnTimezone = function(timeZone, date, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(date instanceof Date, "AuraLocalizationService.getDateStringBasedOnTimezone(): 'date' must be a Date object.");
     $A.assert(typeof callback === "function", "AuraLocalizationService.getDateStringBasedOnTimezone(): 'callback' must be a function.");
+    //#end
 
     if (!this.isValidDateObject(date)) {
         callback("Invalid Date");
@@ -1467,8 +1469,10 @@ AuraLocalizationService.prototype.translateToOtherCalendar = function(date) {
  * @platform
  */
 AuraLocalizationService.prototype.UTCToWallTime = function(date, timezone, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(date instanceof Date, "AuraLocalizationService.UTCToWallTime(): 'date' must be a Date object.");
     $A.assert(typeof callback === "function", "AuraLocalizationService.UTCToWallTime(): 'callback' must be a function.");
+    //#end
 
     timezone = this.normalizeTimeZone(timezone);
     if (timezone === "UTC" || !this.isValidDateObject(date)) {
@@ -1504,8 +1508,10 @@ AuraLocalizationService.prototype.UTCToWallTime = function(date, timezone, callb
  * @platform
  */
 AuraLocalizationService.prototype.WallTimeToUTC = function(date, timezone, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(date instanceof Date, "AuraLocalizationService.WallTimeToUTC(): 'date' must be a Date object.");
     $A.assert(typeof callback === "function", "AuraLocalizationService.WallTimeToUTC(): callback must be a function.");
+    //#end
 
     timezone = this.normalizeTimeZone(timezone);
     if (timezone === "UTC" || !this.isValidDateObject(date)) {

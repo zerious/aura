@@ -790,9 +790,9 @@ AuraInstance.prototype.isCustomerError = function(e) {
                 }
             }
         }
-        
+
         // If the stacktraceIdGen includes tracking from a customer file, return true.
-        // We assume its a customer file, when the /c/ namespace is included. 
+        // We assume its a customer file, when the /c/ namespace is included.
         // Expected matching stacktraceIdGen is ns:component$method$/c/filename.js
         if(e["stacktraceIdGen"] && (/\$\/c\/./g).test(e["stacktraceIdGen"])) {
             return true;
@@ -956,7 +956,9 @@ AuraInstance.prototype.message = function(msg, error, showReload) {
  * @platform
  */
 AuraInstance.prototype.getCallback = function(callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isFunction(callback),"$A.getCallback(): 'callback' must be a valid Function");
+    //#end
     var context=$A.clientService.currentAccess;
     function callbackWrapper(){
         $A.clientService.setCurrentAccess(context);
@@ -1110,12 +1112,10 @@ AuraInstance.prototype.set = function(key, value) {
     var path = key.split('.');
     var root = path.shift();
     var valueProvider = $A.getValueProvider(root);
-    if(!valueProvider){
-        $A.assert(false, "Unable to set value for key '" + key + "'. No value provider was found for '" + root + "'.");
-    }
-    if(!valueProvider["set"]){
-        $A.assert(false, "Unable to set value for key '" + key + "'. Value provider does not implement 'set(key, value)'.");
-    }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
+    $A.assert(valueProvider, "Unable to set value for key '" + key + "'. No value provider was found for '" + root + "'.");
+    $A.assert(valueProvider["set"], "Unable to set value for key '" + key + "'. Value provider does not implement 'set(key, value)'.");
+    //#end
     var oldValue=$A.get(key);
     var result=valueProvider["set"](path.join('.'), value);
     $A.expressionService.updateGlobalReference(key,oldValue,value);
@@ -1160,7 +1160,9 @@ AuraInstance.prototype.installOverride = function(name, fn, scope, priority) {
     if (!override) {
         throw new $A.auraError("$A.installOverride: Invalid name: "+name, null, $A.severity.QUIET);
     }
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(fn && $A.util.isFunction(fn), "Function must be a defined function");
+    //#end
     override.install(fn, scope, priority);
 };
 
@@ -1222,7 +1224,9 @@ AuraInstance.prototype.getContext = function() {
  * @deprecated Use <code>getCallback()</code> instead.
  */
 AuraInstance.prototype.run = function(func, name) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(func && $A.util.isFunction(func), "The parameter 'func' for $A.run() must be a function!");
+    //#end
     if (name === undefined) {
         name = "$A.run()";
     }
@@ -1272,7 +1276,9 @@ AuraInstance.prototype.assert = function(condition, assertMessage) {
  */
 AuraInstance.prototype.userAssert = function(condition, msg) {
     // For now use the same method
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(condition, msg);
+    //#end
 };
 
 /**
@@ -1424,16 +1430,22 @@ AuraInstance.prototype.getValueProvider = function(type) {
  * @public
  */
 AuraInstance.prototype.addValueProvider=function(type,valueProvider){
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(type),"$A.addValueProvider(): 'type' must be a valid String.");
     $A.assert(type.charAt(0)==='$',"$A.addValueProvider(): 'type' must start with '$'.");
     $A.assert(",$browser,$label,$locale,".indexOf(","+type.toLowerCase()+",")===-1,"$A.addValueProvider(): '"+type+"' is a reserved valueProvider.");
     $A.assert(!$A.util.isUndefinedOrNull(valueProvider),"$A.addValueProvider(): 'valueProvider' is required.");
+    //#end
     var context=this.getContext();
     if(context){
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(this.getValueProvider(type)==null,"$A.addValueProvider(): '"+type+"' has already been registered.");
+        //#end
         context.addGlobalValueProvider(type,valueProvider);
     }else{
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(this.globalValueProviders[type]==null,"$A.addValueProvider(): '"+type+"' has already been registered.");
+        //#end
         this.globalValueProviders[type]=valueProvider;
     }
 };
@@ -1448,8 +1460,10 @@ AuraInstance.prototype.addValueProvider=function(type,valueProvider){
  * @return undefined
  */
 AuraInstance.prototype.getDefinition = function(descriptor, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(descriptor), "'descriptor' must be an event or component descriptor such as 'prefix:name' or 'e.prefix:name'.");
     $A.assert($A.util.isFunction(callback), "'callback' must be a valid function.");
+    //#end
 
     if (this.getContext().uriAddressableDefsEnabled) {
         $A.getDefinitions([descriptor], function unpackDefinition(defs){
@@ -1473,8 +1487,10 @@ AuraInstance.prototype.getDefinition = function(descriptor, callback) {
  * @return undefined             Always use the callback to access the definitions you requested.
  */
 AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isArray(descriptors), "'descriptors' must be an array of definition descriptors to retrieve.");
     $A.assert($A.util.isFunction(callback), "'callback' must be a valid function.");
+    //#end
 
     if (this.getContext().uriAddressableDefsEnabled) {
         var that = this;
@@ -1543,7 +1559,9 @@ AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
             "names": requestDefinitions
         });
         action.setCallback(this, function getDefintions$callback() {
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             //$A.assert(action.getState() === 'SUCCESS', "Definition '" + descriptor + "' was not found on the client or the server.");
+            //#end
             // We use getDef at the moment so we do the access check.
             //executeCallbackcallback(this.getDef(descriptor));
             //var returnValue = action.getReturnValue();
@@ -1572,7 +1590,9 @@ AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
  * @return {Boolean}             True if the definition is present on the client.
  */
 AuraInstance.prototype.hasDefinition = function(descriptor) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(descriptor), "'descriptor' must be an event or component descriptor such as 'prefix:name' or 'e.prefix:name'.");
+    //#end
 
     if(descriptor.indexOf("e.") !== -1) {
         return this.eventService.hasDefinition(descriptor.replace("e.", ""));

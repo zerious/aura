@@ -30,6 +30,7 @@
  * @constructor
  */
 Aura.Utils.Override = function Override(instance, orig, proto, replace, restore) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isObject(instance)||(instance === null), "Override: instance must be an object or null");
     $A.assert($A.util.isFunction(orig), "Override: orig argument must be a function");
     $A.assert(proto === true || proto === false, "Override: Proto argument must be supplied");
@@ -37,6 +38,7 @@ Aura.Utils.Override = function Override(instance, orig, proto, replace, restore)
     $A.assert($A.util.isFunction(restore), "Override: restore must be a function");
 
     $A.assert((!instance) === proto, "OverrideMapDef: instance argument must match !proto");
+    //#end
 
     this.instance = instance;
     this.orig = orig;
@@ -60,7 +62,7 @@ Aura.Utils.Override = function Override(instance, orig, proto, replace, restore)
  *  var ret = config["fn"].apply(config["scope"], arguments);
  *  return ret
  * ------
- * 
+ *
  * That stanza executes down the chain of overrides. It is not required, but if it is not executed,
  * the following overrides in the chain, and the original function, will not be executed.
  *

@@ -140,7 +140,9 @@ InteropComponent.prototype.setupAttributes = function(config) {
                 var key = $A.expressionService.normalize(valueConfig.getExpression());
                 var provider = key.split('.')[0];
                 var isPTV = valueProvider instanceof PassthroughValue;
+                //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                 $A.assert(isPTV || provider === 'c' || provider === 'v', 'Provider type not supported');
+                //#end
 
                 var valueDescriptor = value['descriptor'] || attribute;
                 var startsWithOn = valueDescriptor && valueDescriptor.indexOf('on') === 0;
@@ -155,7 +157,9 @@ InteropComponent.prototype.setupAttributes = function(config) {
                     }
                 } else if (provider === 'c') {
                     var definedAttribute = !!this.interopDef['props'][valueDescriptor];
+                    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                     $A.assert(definedAttribute || startsWithOn, 'Attribute not defined in the component');
+                    //#end
                     isEvent = !definedAttribute;
                     valueConfig = this.bridgeAction(valueConfig, isEvent, hasNativeAPIExposed);
                 } else {
@@ -315,7 +319,9 @@ InteropComponent.prototype.getMapFromClassName = function (className) {
  */
 InteropComponent.prototype.updateClassAttribute = function (element, value) {
     var currentClassMap = this.currentClassMap;
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(currentClassMap !== null && (typeof currentClassMap === 'object'), 'Current Class Map must be an object.');
+    //#end
 
     var classMap = this.getMapFromClassName(value);
 
@@ -388,7 +394,9 @@ InteropComponent.prototype.get = function (key) {
     key = $A.expressionService.normalize(key);
     var path = key.split('.');
     path.shift(); // remove provider
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(path.length === 1, 'This component does not allow to get nested properties');
+    //#end
     var propValue = $A.expressionService.resolve(path.join('.'), this.attributes);
 
     if (propValue !== undefined
@@ -418,8 +426,10 @@ InteropComponent.prototype.set = function (key, value) {
     var provider = path.shift();
     var oldValue;
 
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(provider === 'v', 'This component does not allow mutations on controller actions');
     $A.assert(path.length === 1, 'This component does not allow set on nested properties');
+    //#end
 
     var expr = path.join('.');
     var attrValue = this.attributes[expr];

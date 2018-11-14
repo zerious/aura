@@ -24,8 +24,10 @@
  * @constructor
  */
 Aura.Utils.DateTimeFormat = function(formatString, locale) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(!$A.util.isUndefinedOrNull(formatString), "[Assertion failed] - 'formatString' argument is required; it must not be null or undefined");
     $A.assert(!$A.util.isUndefinedOrNull(locale), "[Assertion failed] - 'locale' argument is required; it must not be null or undefined");
+    //#end
     /**
      * Parse the format string into tokens.
      *

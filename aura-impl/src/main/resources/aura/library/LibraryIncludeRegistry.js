@@ -59,8 +59,10 @@ LibraryIncludeRegistry.prototype.hasLibraryInclude = function(descriptor) {
  * @param {Function} exporter A function that when executed will return the include object.
  */
  LibraryIncludeRegistry.prototype.addLibraryInclude = function(descriptor, dependencies, exporter) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(descriptor), "Include descriptor is invalid: " + descriptor);
     $A.assert($A.util.isFunction(exporter), "Include exporter is not a function: " + descriptor);
+    //#end
     if (!this.hasLibraryInclude(descriptor)) {
         this.exporter[descriptor] = exporter;
         this.dependencies[descriptor] = dependencies;

@@ -151,7 +151,9 @@ var AuraDevToolService = function() {
             var from = config["from"];
             if(from){
                 view = this["views"][from];
+                //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
                 $A.assert(view, "Invalid view : "+from);
+                //#end
             }else{
                 view = this.defaultView;
             }
@@ -1085,7 +1087,7 @@ var AuraDevToolService = function() {
                      var startLooking = false;
 
                      for(var index = 0; index< tags.length; index++){
-                        
+
                         children = getParentNode(tags[index]).children;
                         currTag = "";
                         startLooking = false;

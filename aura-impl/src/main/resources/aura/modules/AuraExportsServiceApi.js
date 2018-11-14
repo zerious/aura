@@ -28,8 +28,10 @@ Aura.ServiceApi = {
             return targetDef && replacementDef;
         });
 
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(targetDef && replacementDef, 'Definitions could not be found');
         $A.assert(targetDef.access === replacementDef.access, 'Access checks do not match');
+        //#end
         $A.componentService.moduleDefRegistry[targetDef.moduleName] = replacementDef;
     },
     "registerScopedModuleResolver": function(scope, resolver) {

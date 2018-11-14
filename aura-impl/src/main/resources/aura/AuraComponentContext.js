@@ -59,9 +59,11 @@ AuraComponentContext.prototype.push = function(cmp) {
  */
 AuraComponentContext.prototype.pop = function(cmp) {
     var oldFrame = this.stack.pop();
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     if (cmp) {
         $A.assert(cmp === oldFrame.cmp, "ComponentContext mismatch detected.");
     }
+    //#end
     return oldFrame.cmp;
 };
 

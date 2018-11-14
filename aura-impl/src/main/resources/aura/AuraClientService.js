@@ -59,7 +59,9 @@ Aura.Services.AuraClientService$AuraXHR.prototype.getAction = function(id) {
     if (!key) {
         var keys = Object.keys(this.actions);
 
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(keys.length === 1, "When no ID is specified, there should only be one action in the XHR.");
+        //#end
 
         if (keys.length === 1) {
             key = keys[0];
@@ -780,11 +782,15 @@ AuraClientService.prototype.clientLibraryLoadComplete = function() {
  * @export
  */
 AuraClientService.prototype.loadClientLibrary = function(name, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof name === "string", "AuraClientService.loadClientLibrary(): name must be a String.");
+    //#end
 
     name = name.toLowerCase();
     var lib = this.clientLibraries[name];
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(lib, "AuraClientService.loadClientLibrary(): ClientLibrary has not been registered: " + name);
+    //#end
 
     if (lib.loaded) {
         return callback();
@@ -867,7 +873,9 @@ AuraClientService.prototype.setInCollection = function() {
  */
 AuraClientService.prototype.clearInCollection = function() {
     var name = this.auraStack.pop();
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(name === "AuraClientService$collection");
+    //#end
 };
 
 AuraClientService.prototype.isDisconnectedOrCancelled = function(response) {
@@ -1721,7 +1729,9 @@ AuraClientService.prototype.runWhenXHRIdle = function(f) {
  * Executes the queue of functions to run when no XHRs are in-flight.
  */
 AuraClientService.prototype.processXHRIdleQueue = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.inFlightXHRs() === 0, "Idle queue should only be processed when no XHRs are in flight");
+    //#end
 
     // optimization
     if (this.xhrIdleQueue.length === 0) {
@@ -2197,7 +2207,9 @@ AuraClientService.prototype.initializeInjectedServices = function(services) {
             var serviceModule = $A.componentService.evaluateModuleDef(serviceDefinition);
             var serviceConstructor = serviceModule["default"] || serviceModule;
             var service = serviceConstructor(Aura.ServiceApi, $A.componentService.moduleEngine);
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             $A.assert(service.name, 'Unknown service name');
+            //#end
             serviceRegistry[service.name] = service;
         });
     }
@@ -2205,7 +2217,7 @@ AuraClientService.prototype.initializeInjectedServices = function(services) {
 
 /**
  * Adds a resolver for a scoped module import.
- * 
+ *
  * Example: ` import foo from "@salesforce/label/MyLabels.Foo" `
  *
  * @param {String} scope The scope of import. For example, the scope of "@salesforce/label/MyLabels.Foo" would be "salesforce"
@@ -2215,14 +2227,16 @@ AuraClientService.prototype.initializeInjectedServices = function(services) {
  * @export
  */
 AuraClientService.prototype.addScopedModuleResolver = function (scope, resolver) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(typeof resolver === 'function', 'Scoped module resolver must be a function');
+    //#end
     this.moduleScopedImports[scope] = resolver;
 };
 
 /**
  * Resolves the import of a scoped module by invoking a resolver for the given
  * scope if a resolver is registered.
- * 
+ *
  * @param {String} fullImport The entire path of the module being imported
  * @param {String} scope The scope of the module import, e.g. "salesforce"
  * @memberOf AuraClientService
@@ -2231,7 +2245,9 @@ AuraClientService.prototype.addScopedModuleResolver = function (scope, resolver)
 AuraClientService.prototype.resolveScopedModuleImport = function (scope, fullImport) {
     if (!this.moduleScopedImportsCache[fullImport]) {
         var resolver = this.moduleScopedImports[scope];
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(resolver, "No resolver found for scoped module import '" + fullImport + "'.");
+        //#end
         this.moduleScopedImportsCache[fullImport] = resolver(fullImport);
     }
 
@@ -2242,13 +2258,13 @@ AuraClientService.prototype.resolveScopedModuleImport = function (scope, fullImp
  * Default resolver for the @salesforce scoped module import. This allows off-core projects to  still have access to
  * a sub-set of @salesforce imports in their modules, such as labels, and can be overridden by core to provide the full
  * set of @salesforce imports.
- * 
+ *
  * This is registered at the framework level rather than the app level to allow things like component tests that load a
  * cmp file directly in the browser to still function.
- * 
+ *
  * W-5187044: Investigate if we can do this injection in the test runner flow instead and if that is a complete and
  * adequete solution.
- * 
+ *
  * @param {String} fullImport The entire path of the module being imported
  * @memberOf AuraClientService
  * @private
@@ -2260,14 +2276,14 @@ AuraClientService.prototype.defaultSalesforceImportResolver = function(fullImpor
     var key = parts[0];
 
     switch (key) {
-        case 'label': 
+        case 'label':
             return $A.get("$Label." + parts[1]);
         case 'cssvars':
             return function (cssVar, fallback) {
                 return $A.clientService.cssVars[cssVar.slice(2)] || fallback || 'inherit';
             };
 
-        default: 
+        default:
             return undefined;
     }
 };
@@ -2325,7 +2341,9 @@ AuraClientService.prototype.popStack = function(name) {
 
     if (this.auraStack.length > 0) {
         lastName = this.auraStack.pop();
+        //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
         $A.assert(lastName === name, "Broken stack: popped "+lastName+" expected "+name+", stack = "+this.auraStack);
+        //#end
     } else {
         $A.warning("Pop from empty stack");
     }
@@ -2348,7 +2366,7 @@ AuraClientService.prototype.postProcess = function() {
         } finally {
             this.auraStack.pop();
         }
- 
+
     }
 };
 
@@ -3695,7 +3713,9 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
         try {
             response = actionResponses[r];
 
+            //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
             $A.assert((!response["id"] ? actionResponses.length === 1 : true), "When an action has no ID, there should be only one action in the response.");
+            //#end
 
             action = auraXHR.getAction(response["id"]);
             if (action) {
@@ -4134,7 +4154,9 @@ AuraClientService.prototype.isConnected = function() {
  * @platform
  */
 AuraClientService.prototype.enqueueAction = function(action, background) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isAction(action), "Cannot call EnqueueAction() with a non Action parameter.");
+    //#end
 
     if (background) {
         $A.warning("$A.enqueueAction(): Do not use the deprecated background parameter. The parameter is not used anymore.");
@@ -4508,7 +4530,9 @@ AuraClientService.prototype.getParallelBootstrapLoad = function() {
  * @export
  */
 AuraClientService.prototype.setXHRTimeout = function(timeout) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isFiniteNumber(timeout) && timeout > 0, "Timeout must be a positive number");
+    //#end
     this.xhrTimeout = timeout;
 };
 

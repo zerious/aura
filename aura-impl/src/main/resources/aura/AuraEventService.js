@@ -57,7 +57,9 @@ AuraEventService.validatePhase=function(phase, defaultPhase){
  * @export
  */
 AuraEventService.prototype.newEvent = function(eventDef, eventName, sourceCmp) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(eventDef, "EventDef is required");
+    //#end
     eventDef = this.getDef(eventDef);
 
     return this.getNewEvent(eventDef, eventName, sourceCmp);
@@ -1272,7 +1274,9 @@ AuraEventService.prototype.getEventDef = function(config) {
  * @param  {String}  descriptor Event descriptor in the pattern prefix:name or markup://prefix:name.
  */
 AuraEventService.prototype.getDef = function(descriptor) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(descriptor, "No EventDefinition was descriptor specified.");
+    //#end
     var definition = this.getEventDef(descriptor);
 
     if(definition && !$A.clientService.allowAccess(definition)) {
@@ -1380,7 +1384,9 @@ AuraEventService.prototype.getDefinition = function(descriptor, callback) {
  */
 AuraEventService.prototype.getDescriptorFromConfig = function(descriptorConfig) {
     var descriptor = descriptorConfig && descriptorConfig[Json.ApplicationKey.DESCRIPTOR];
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(descriptor, "Event Descriptor for Config required for registration");
+    //#end
     return descriptor;
 };
 
@@ -1435,7 +1441,9 @@ AuraEventService.prototype.createEventDef = function(config) {
  * @param {Object} config event definition config
  */
 AuraEventService.prototype.saveEventConfig = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(config && config[Json.ApplicationKey.DESCRIPTOR], "Event config required for registration");
+    //#end
     this.savedEventConfigs[config[Json.ApplicationKey.DESCRIPTOR]] = config;
 };
 

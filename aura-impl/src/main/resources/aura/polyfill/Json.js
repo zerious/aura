@@ -110,7 +110,9 @@ Json.prototype.resolveRefsObject = function(obj) {
  * @param {Array} arr The array to resolve. It is modified in-place.
  */
 Json.prototype.resolveRefsArray = function(arr) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isArray(arr), "arr needs to be an array");
+    //#end
     var cmpDefCollector = [];
     this._resolveRefs(arr, {}, null, null, cmpDefCollector);
     arr.unshift.apply(arr, cmpDefCollector);
@@ -201,7 +203,7 @@ Json.prototype.stringifyReplacer = function(key, value) {
     // the resulted JSON string if its value is a function
     if (typeof value === 'function') {
         return value + '';
-    } 
+    }
 
     // Do not serialize components to the server
     if($A.util.isComponent(value)) {

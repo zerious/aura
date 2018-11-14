@@ -32,8 +32,10 @@ function LibraryRegistry() {
  * @export
  */
 LibraryRegistry.prototype.initLibraries = function(libraries) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isEmpty(this.libraries), "Library registry already initialized.");
     $A.assert($A.util.isArray(libraries), "Library registry must be initialized with an array.");
+    //#end
     this.libraries = libraries;
 };
 
@@ -51,8 +53,10 @@ LibraryRegistry.prototype.hasLibrary = function(descriptor) {
  * @param {Object} includes Pairs of library export and include definitions.
  */
 LibraryRegistry.prototype.addLibrary = function(descriptor, includes) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isString(descriptor), "Library descriptor is invalid: " + descriptor);
     $A.assert($A.util.isObject(includes), "Library includes must be an array: " + descriptor);
+    //#end
     if (!this.hasLibrary(descriptor)) {
         this.libraries[descriptor] = includes;
     }

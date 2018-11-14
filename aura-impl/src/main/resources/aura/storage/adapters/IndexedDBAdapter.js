@@ -247,7 +247,9 @@ IndexedDBAdapter.prototype.getObjectStore = function() {
  * @returns {Promise} a promise that resolves with the size in bytes
  */
 IndexedDBAdapter.prototype.getSize = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.getSize() called with this.ready=" + this.ready);
+    //#end
     var that = this;
     if (this.sizeAge < 50) {
         return Promise["resolve"](this.sizeGuess);
@@ -265,7 +267,9 @@ IndexedDBAdapter.prototype.getSize = function() {
  * @returns {Promise} A promise that resolves with an object that contains key-value pairs.
  */
 IndexedDBAdapter.prototype.getItems = function(keys /*, includeExpired*/) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.getItems() called with this.ready=" + this.ready);
+    //#end
     // TODO - optimize by respecting includeExpired
     var that = this;
     return new Promise(function(resolve, reject) {
@@ -310,7 +314,9 @@ IndexedDBAdapter.prototype.isPersistent = function() {
  * @returns {Promise} A promise that resolves when the sweep is complete.
  */
 IndexedDBAdapter.prototype.sweep = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.sweep() called with this.ready=" + this.ready);
+    //#end
     var that = this;
     return new Promise(function(resolve, reject) {
         // 0 because we don't need any space freed. this causes expired items
@@ -546,7 +552,9 @@ IndexedDBAdapter.prototype.walkInternal = function(resolve, reject, sendResult) 
  * @returns {Promise} A promise that resolves when the items are stored.
  */
 IndexedDBAdapter.prototype.setItems = function(tuples) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.setItems() called with this.ready=" + this.ready);
+    //#end
 
     var that = this;
     return new Promise(function(resolve, reject) {
@@ -624,7 +632,9 @@ IndexedDBAdapter.prototype.setItems = function(tuples) {
  * @returns {Promise} A promise that resolves when all items are removed.
  */
 IndexedDBAdapter.prototype.removeItems = function(keys) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.removeItems() called with this.ready=" + this.ready);
+    //#end
     var that = this;
     return new Promise(function(resolve, reject) {
         var transactionTimer = that.thresholdMetricTimer("performance:storage-indexeddb-removeItems-write-transaction");
@@ -678,7 +688,9 @@ IndexedDBAdapter.prototype.removeItems = function(keys) {
  * @returns {Promise} A promise that resolves when the store is cleared.
  */
 IndexedDBAdapter.prototype.clear = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.clear() called with this.ready=" + this.ready);
+    //#end
     var that = this;
     return new Promise(function(resolve, reject) {
         var transactionTimer = that.thresholdMetricTimer("performance:storage-indexeddb-clear-write-transaction");
@@ -955,7 +967,9 @@ IndexedDBAdapter.prototype.thresholdMetricTimer = function(name) {
  * @return {Promise} A promise that deletes the entire database
  */
 IndexedDBAdapter.prototype.deleteStorage = function() {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.ready, "IndexedDBAdapter.deleteStorage() called with this.ready=" + this.ready);
+    //#end
     var that = this;
     return new Promise(function(resolve, reject) {
 

@@ -354,7 +354,9 @@ Action.prototype.getName = function() {
  * @export
  */
 Action.prototype.setParams = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isObject(config), "setParams() must be passed an object.");
+    //#end
     var paramDefs = this.paramDefs;
     for ( var key in paramDefs) {
         this.params[key] = config[key];
@@ -489,7 +491,9 @@ Action.prototype.getComponent = function() {
  * @export
  */
 Action.prototype.setCallback = function(scope, callback, name) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isFunction(callback), "Action.setCallback(): callback for '"+name+"' must be a function");
+    //#end
     if (name !== undefined && name !== "ALL" && name !== "SUCCESS" && name !== "ERROR" && name !== "INCOMPLETE"
             && name !== "ABORTED") {
         throw new $A.auraError("Action.setCallback(): Invalid callback name '" + name + "'");
@@ -547,7 +551,9 @@ Action.prototype.setCallback = function(scope, callback, name) {
  * @export
  */
 Action.prototype.setAllAboardCallback = function(scope, callback) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert($A.util.isFunction(callback), "Action 'All Aboard' callback should be a function");
+    //#end
     var that = this;
 
     /**
@@ -640,8 +646,10 @@ Action.prototype.run = function(evt) {
  * @export
  */
 Action.prototype.runDeprecated = function(evt) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.def && this.def.isClientAction(),
              "run() cannot be called on a server action. Use $A.enqueueAction() instead.");
+    //#end
 
     if(this.cmp.destroyed===1) {
         return;
@@ -1144,8 +1152,10 @@ Action.prototype.isAbortable = function() {
  * @export
  */
 Action.prototype.setStorable = function(config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(this.def && this.def.isServerAction(),
               "setStorable() cannot be called on a client action.");
+    //#end
     this.storable = true;
     this.storableConfig = config;
     this.abortable = true;
@@ -1281,7 +1291,7 @@ Action.prototype.toJSON = function() {
     if (isVersioned) {
         json["version"] = version;
     }
-    
+
     if (this.storable) {
         json["storable"] = this.storable;
     }

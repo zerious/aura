@@ -33,7 +33,9 @@
  * @export
  */
 Aura.Event.InteropEvent = function (component, config) {
+    //#if {"excludeModes" : ["PRODUCTION","PTEST"]}
     $A.assert(component, 'InteropEvent constructor requires the `component` argument.');
+    //#end
 
     var _config = config || {};
     var nativeEvent = _config['isEvent'] && _config['params'];
